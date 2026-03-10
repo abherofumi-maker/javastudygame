@@ -1,1 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS Function Quest</title>
 
+<style>
+
+body{
+margin:0;
+font-family:Comic Sans MS, sans-serif;
+background:linear-gradient(45deg,#ff00cc,#3333ff);
+color:white;
+text-align:center;
+}
+
+h1{
+font-size:40px;
+margin-top:20px;
+text-shadow:3px 3px #000;
+}
+
+#game{
+max-width:600px;
+margin:auto;
+padding:20px;
+}
+
+#card{
+background:white;
+color:black;
+border-radius:20px;
+padding:20px;
+box-shadow:0 0 20px rgba(0,0,0,0.5);
+}
+
+textarea{
+width:100%;
+height:140px;
+border-radius:10px;
+border:none;
+background:#111;
+color:#00ff88;
+font-family:monospace;
+font-size:16px;
+padding:10px;
+}
+
+button{
+margin:10px;
+padding:12px 20px;
+font-size:18px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+}
+
+#run{
+background:#00ffcc;
+}
+
+#hint{
+background:#ffcc00;
+}
+
+#result{
+font-size:22px;
+margin-top:10px;
+}
+
+.stats{
+margin-top:10px;
+font-size:18px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎮 JS Function Quest</h1>
+
+<div id="game">
+
+<div id="card">
+
+<div id="question"></div>
+
+<br>
+
+<textarea id="code"></textarea>
+
+<br>
+
+<button id="run" onclick="check()">▶ 実行</button>
+<button id="hint" onclick="showHint()">🤖 AIヒント</button>
+
+<div id="result"></div>
+
+<div class="stats">
+レベル: <span id="level">1</span>  
+スコア: <span id="score">0</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let level=0
+let score=0
+
+const problems=[
+
+{
+text:"Lv1: add(a,b) を作って足し算を返そう",
+template:`function add(a,b){
+
+}`,
+hint:"return a + b;"
+,test:()=>add(2,3)===5
+},
+
+{
+text:"Lv2: multiply(a,b) を作って掛け算を返そう",
+template:`function multiply(a,b){
+
+}`,
+hint:"return a * b;",
+test:()=>multiply(3,4)===12
+},
+
+{
+text:"Lv3: isEven(n) 偶数ならtrue",
+template:`function isEven(n){
+
+}`,
+hint:"n % 2 === 0",
+test:()=>isEven(4)===true && isEven(5)===false
+},
+
+{
+text:"Lv4: square(n) を作って2乗",
+template:`function square(n){
+
+}`,
+hint:"n * n",
+test:()=>square(6)===36
+},
+
+{
+text:"Lv5: sumArray(arr) 配列の合計",
+template:`function sumArray(arr){
+
+}`,
+hint:"for か reduce を使う",
+test:()=>sumArray([1,2,3])===6
+},
+
+{
+text:"Lv6: max(a,b) 大きい方を返す",
+template:`function max(a,b){
+
+}`,
+hint:"if または Math.max",
+test:()=>max(10,7)===10
+}
+
+]
+
+function loadLevel(){
+
+document.getElementById("question").innerText=problems[level].text
+document.getElementById("code").value=problems[level].template
+document.getElementById("level").innerText=level+1
+
+}
+
+function check(){
+
+let code=document.getElementById("code").value
+
+try{
+
+eval(code)
+
+if(problems[level].test()){
+
+score++
+
+document.getElementById("result").innerText="🎉 正解！"
+
+level++
+
+if(level>=problems.length){
+
+document.getElementById("result").innerText="🏆 全クリ！すごい！"
+
+}else{
+
+setTimeout(loadLevel,800)
+
+}
+
+}else{
+
+document.getElementById("result").innerText="❌ もう一回！"
+
+}
+
+}catch(e){
+
+document.getElementById("result").innerText="⚠ エラー: "+e.message
+
+}
+
+document.getElementById("score").innerText=score
+
+}
+
+function showHint(){
+
+document.getElementById("result").innerText="💡ヒント: "+problems[level].hint
+
+}
+
+loadLevel()
+
+</script>
+
+</body>
+</html>
