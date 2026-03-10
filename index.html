@@ -20,7 +20,7 @@ text-shadow:2px 2px #000;
 }
 
 #game{
-max-width:700px;
+max-width:720px;
 margin:auto;
 padding:20px;
 }
@@ -56,6 +56,7 @@ cursor:pointer;
 .run{background:#00e5ff}
 .hint{background:#ffd54f}
 .answer{background:#81c784}
+.explain{background:#9575cd;color:white}
 .reset{background:#ef5350;color:white}
 
 .stats{
@@ -66,6 +67,15 @@ font-size:18px;
 #result{
 margin-top:10px;
 font-size:20px;
+}
+
+#explanation{
+margin-top:15px;
+background:#f3f3f3;
+padding:15px;
+border-radius:10px;
+display:none;
+text-align:left;
 }
 
 .progress{
@@ -103,7 +113,8 @@ width:0%;
 
 <button class="run" onclick="runCode()">▶ 実行</button>
 <button class="hint" onclick="showHint()">🤖 ヒント</button>
-<button class="answer" onclick="showAnswer()">👀 正解を見る</button>
+<button class="answer" onclick="showAnswer()">👀 正解</button>
+<button class="explain" onclick="showExplanation()">📖 解説</button>
 <button class="reset" onclick="resetGame()">🔄 リセット</button>
 
 <div id="result"></div>
@@ -117,6 +128,8 @@ XP: <span id="xp">0</span>
 <div class="bar" id="bar"></div>
 </div>
 
+<div id="explanation"></div>
+
 </div>
 
 </div>
@@ -125,6 +138,7 @@ XP: <span id="xp">0</span>
 
 let level=0
 let xp=0
+let revealedAnswer=false
 
 const problems=[
 
@@ -137,6 +151,8 @@ hint:"return a + b",
 answer:`function add(a,b){
 return a + b
 }`,
+explanation:`関数の中で値を外に返すには return を使います。
+a + b を計算してその結果を返しています。`,
 tests:[
 ()=>add(2,3)===5,
 ()=>add(10,5)===15
@@ -152,6 +168,8 @@ hint:"a * b",
 answer:`function multiply(a,b){
 return a * b
 }`,
+explanation:`JavaScriptでは * が掛け算演算子です。
+計算結果を return することで関数の戻り値になります。`,
 tests:[
 ()=>multiply(3,4)===12,
 ()=>multiply(5,6)===30
@@ -167,6 +185,9 @@ hint:"n % 2 === 0",
 answer:`function isEven(n){
 return n % 2 === 0
 }`,
+explanation:`% は余りを求める演算子です。
+偶数は2で割った余りが0になるので
+n % 2 === 0 で判定できます。`,
 tests:[
 ()=>isEven(4)===true,
 ()=>isEven(5)===false
@@ -182,6 +203,8 @@ hint:"n * n",
 answer:`function square(n){
 return n * n
 }`,
+explanation:`二乗は同じ数を2回掛けます。
+n * n で nの二乗になります。`,
 tests:[
 ()=>square(3)===9,
 ()=>square(6)===36
@@ -193,10 +216,12 @@ text:"Lv5 max(a,b) 大きい方",
 template:`function max(a,b){
 
 }`,
-hint:"Math.max か if",
+hint:"Math.max",
 answer:`function max(a,b){
 return Math.max(a,b)
 }`,
+explanation:`Math.max() は複数の数の中から
+一番大きい値を返すJavaScript標準関数です。`,
 tests:[
 ()=>max(10,5)===10,
 ()=>max(7,20)===20
@@ -216,6 +241,8 @@ sum+=n
 }
 return sum
 }`,
+explanation:`配列は for...of ループで順番に取り出せます。
+sum に足していくことで合計を求められます。`,
 tests:[
 ()=>sumArray([1,2,3])===6,
 ()=>sumArray([5,5,5])===15
@@ -260,6 +287,7 @@ return
 
 document.getElementById("question").innerText=problems[level].text
 document.getElementById("code").value=problems[level].template
+document.getElementById("explanation").style.display="none"
 
 updateUI()
 
@@ -281,12 +309,22 @@ if(!t()) pass=false
 
 }
 
+if(revealedAnswer){
+pass=true
+}
+
 if(pass){
 
+if(revealedAnswer){
+xp+=2
+}else{
 xp+=10
-level++
+}
 
-document.getElementById("result").innerText="🎉 正解！ +10XP"
+level++
+revealedAnswer=false
+
+document.getElementById("result").innerText="🎉 クリア！"
 
 save()
 
@@ -317,7 +355,17 @@ document.getElementById("result").innerText="💡 "+problems[level].hint
 function showAnswer(){
 
 document.getElementById("code").value=problems[level].answer
-document.getElementById("result").innerText="👀 正解を表示しました"
+revealedAnswer=true
+document.getElementById("result").innerText="👀 正解を表示しました（実行でクリア）"
+
+}
+
+function showExplanation(){
+
+let box=document.getElementById("explanation")
+
+box.style.display="block"
+box.innerText=problems[level].explanation
 
 }
 
@@ -326,6 +374,7 @@ function resetGame(){
 localStorage.clear()
 level=0
 xp=0
+revealedAnswer=false
 loadLevel()
 
 }
