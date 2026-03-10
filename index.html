@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JS Quest</title>
+<title>JS QUEST</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(45deg,#ff5f6d,#ffc371);
+font-family:sans-serif;
+background:linear-gradient(45deg,#ff6ec4,#7873f5);
 text-align:center;
 }
 
 h1{
 color:white;
-text-shadow:2px 2px black;
+text-shadow:2px 2px #000;
 }
 
 #game{
@@ -34,11 +34,11 @@ box-shadow:0 10px 30px rgba(0,0,0,0.3);
 
 textarea{
 width:100%;
-height:150px;
+height:160px;
 background:#111;
 color:#00ff9c;
-border-radius:10px;
 border:none;
+border-radius:10px;
 padding:10px;
 font-family:monospace;
 font-size:16px;
@@ -46,7 +46,7 @@ font-size:16px;
 
 button{
 margin:5px;
-padding:12px 20px;
+padding:12px 18px;
 font-size:16px;
 border:none;
 border-radius:10px;
@@ -55,6 +55,7 @@ cursor:pointer;
 
 .run{background:#00e5ff}
 .hint{background:#ffd54f}
+.answer{background:#81c784}
 .reset{background:#ef5350;color:white}
 
 .stats{
@@ -102,6 +103,7 @@ width:0%;
 
 <button class="run" onclick="runCode()">▶ 実行</button>
 <button class="hint" onclick="showHint()">🤖 ヒント</button>
+<button class="answer" onclick="showAnswer()">👀 正解を見る</button>
 <button class="reset" onclick="resetGame()">🔄 リセット</button>
 
 <div id="result"></div>
@@ -121,17 +123,20 @@ XP: <span id="xp">0</span>
 
 <script>
 
-let level = 0
-let xp = 0
+let level=0
+let xp=0
 
-const problems = [
+const problems=[
 
 {
-text:"Lv1: add(a,b) を作って足し算を返そう",
+text:"Lv1 add(a,b) 足し算",
 template:`function add(a,b){
 
 }`,
 hint:"return a + b",
+answer:`function add(a,b){
+return a + b
+}`,
 tests:[
 ()=>add(2,3)===5,
 ()=>add(10,5)===15
@@ -139,23 +144,29 @@ tests:[
 },
 
 {
-text:"Lv2: multiply(a,b) 掛け算",
+text:"Lv2 multiply(a,b) 掛け算",
 template:`function multiply(a,b){
 
 }`,
 hint:"a * b",
+answer:`function multiply(a,b){
+return a * b
+}`,
 tests:[
 ()=>multiply(3,4)===12,
-()=>multiply(5,5)===25
+()=>multiply(5,6)===30
 ]
 },
 
 {
-text:"Lv3: isEven(n) 偶数ならtrue",
+text:"Lv3 isEven(n) 偶数判定",
 template:`function isEven(n){
 
 }`,
 hint:"n % 2 === 0",
+answer:`function isEven(n){
+return n % 2 === 0
+}`,
 tests:[
 ()=>isEven(4)===true,
 ()=>isEven(5)===false
@@ -163,35 +174,48 @@ tests:[
 },
 
 {
-text:"Lv4: square(n) 二乗",
+text:"Lv4 square(n) 二乗",
 template:`function square(n){
 
 }`,
 hint:"n * n",
+answer:`function square(n){
+return n * n
+}`,
 tests:[
 ()=>square(3)===9,
-()=>square(10)===100
+()=>square(6)===36
 ]
 },
 
 {
-text:"Lv5: max(a,b) 大きい方",
+text:"Lv5 max(a,b) 大きい方",
 template:`function max(a,b){
 
 }`,
-hint:"if または Math.max",
+hint:"Math.max か if",
+answer:`function max(a,b){
+return Math.max(a,b)
+}`,
 tests:[
 ()=>max(10,5)===10,
-()=>max(2,8)===8
+()=>max(7,20)===20
 ]
 },
 
 {
-text:"Lv6: sumArray(arr) 配列合計",
+text:"Lv6 sumArray(arr) 配列合計",
 template:`function sumArray(arr){
 
 }`,
-hint:"for または reduce",
+hint:"for ループ",
+answer:`function sumArray(arr){
+let sum=0
+for(let n of arr){
+sum+=n
+}
+return sum
+}`,
 tests:[
 ()=>sumArray([1,2,3])===6,
 ()=>sumArray([5,5,5])===15
@@ -209,18 +233,18 @@ localStorage.setItem("jsquest_xp",xp)
 
 function load(){
 
-level = parseInt(localStorage.getItem("jsquest_level")) || 0
-xp = parseInt(localStorage.getItem("jsquest_xp")) || 0
+level=parseInt(localStorage.getItem("jsquest_level"))||0
+xp=parseInt(localStorage.getItem("jsquest_xp"))||0
 
 }
 
 function updateUI(){
 
-document.getElementById("level").innerText = level+1
-document.getElementById("xp").innerText = xp
+document.getElementById("level").innerText=level+1
+document.getElementById("xp").innerText=xp
 
-let progress = ((level)/problems.length)*100
-document.getElementById("bar").style.width = progress+"%"
+let progress=(level/problems.length)*100
+document.getElementById("bar").style.width=progress+"%"
 
 }
 
@@ -234,8 +258,8 @@ return
 
 }
 
-document.getElementById("question").innerText = problems[level].text
-document.getElementById("code").value = problems[level].template
+document.getElementById("question").innerText=problems[level].text
+document.getElementById("code").value=problems[level].template
 
 updateUI()
 
@@ -243,13 +267,13 @@ updateUI()
 
 function runCode(){
 
-let code = document.getElementById("code").value
+let code=document.getElementById("code").value
 
 try{
 
 eval(code)
 
-let pass = true
+let pass=true
 
 for(let t of problems[level].tests){
 
@@ -259,7 +283,7 @@ if(!t()) pass=false
 
 if(pass){
 
-xp += 10
+xp+=10
 level++
 
 document.getElementById("result").innerText="🎉 正解！ +10XP"
@@ -287,6 +311,13 @@ updateUI()
 function showHint(){
 
 document.getElementById("result").innerText="💡 "+problems[level].hint
+
+}
+
+function showAnswer(){
+
+document.getElementById("code").value=problems[level].answer
+document.getElementById("result").innerText="👀 正解を表示しました"
 
 }
 
